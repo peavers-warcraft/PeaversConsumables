@@ -113,6 +113,7 @@ end
 
 local function CreateWindow()
     local frame = CreateFrame("Frame", "PeaversConsumablesFrame", UIParent, "DefaultPanelTemplate")
+    frame:Hide() -- frames are visible on creation; stay hidden until Show() drives a refresh
     frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("HIGH")
@@ -144,10 +145,6 @@ local function CreateWindow()
     scrollFrame:SetPoint("BOTTOMRIGHT", -30, 6)
     frame.scrollFrame = scrollFrame
 
-    frame:SetScript("OnShow", function()
-        MainFrame:Refresh()
-    end)
-
     return frame
 end
 
@@ -168,7 +165,11 @@ function MainFrame:Refresh()
         frame.content:SetParent(nil)
     end
     local content = CreateFrame("Frame", nil, frame.scrollFrame)
-    content:SetWidth(frame.scrollFrame:GetWidth())
+    local width = frame.scrollFrame:GetWidth()
+    if not width or width < 50 then
+        width = FRAME_WIDTH - 42 -- scroll frame insets before first layout pass
+    end
+    content:SetWidth(width)
     frame.scrollFrame:SetScrollChild(content)
     frame.content = content
 
@@ -227,6 +228,7 @@ function MainFrame:Show()
     end
 
     frame:Show()
+    self:Refresh()
 end
 
 function MainFrame:Hide()
