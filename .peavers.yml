@@ -4,8 +4,7 @@
 iconType: ConsumablesRuneIcon
 
 # CurseForge project ID for download statistics
-# TODO: set once the CurseForge project is created
-curseForgeProjectId: 0
+curseForgeProjectId: 1596884
 
 # Tags for filtering and categorization
 tags:
