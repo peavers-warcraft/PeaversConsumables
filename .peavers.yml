@@ -1,0 +1,14 @@
+# .peavers.yml - Addon metadata for peavers.io website
+
+# Icon to display on website
+iconType: ConsumablesRuneIcon
+
+# CurseForge project ID for download statistics
+# TODO: set once the CurseForge project is created
+curseForgeProjectId: 0
+
+# Tags for filtering and categorization
+tags:
+  - consumables
+  - enchants
+  - auction-house
