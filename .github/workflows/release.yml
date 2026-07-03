@@ -8,14 +8,15 @@ on:
 permissions:
   contents: write
   actions: write
+  id-token: write
 
 jobs:
   release:
-    uses: peavers-warcraft/workflow-templates/.github/workflows/release.yml@master
+    uses: peavers-code/peavers-warcraft-workflows/.github/workflows/release.yml@master
     with:
       toc_file: PeaversConsumables.toc
       addon_name: PeaversConsumables
       git_user_name: Chris Turner
       git_user_email: peavers@gmail.com
-      use_self_hosted: false
+      use_self_hosted: true
     secrets: inherit
