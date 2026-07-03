@@ -1,0 +1,18 @@
+package-as: PeaversConsumables
+
+required-dependencies:
+  - peaverscommons
+  - peaversconfig
+  - peaversconsumablesdata
+
+ignore:
+  - .git
+  - .github
+  - .gitignore
+  - .editorconfig
+  - .pkgmeta
+  - README.md
+  - CHANGELOG.md
+  - LICENSE
+  - local_deploy.sh
+  - local_deploy.ps1

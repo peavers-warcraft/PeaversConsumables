@@ -1,0 +1,11 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: PeaversConsumables
+  description: "A World of Warcraft addon that shows the best consumables, enchants and gems for your spec and searches them on the Auction House with one click."
+  annotations:
+    github.com/project-slug: peavers-warcraft/PeaversConsumables
+spec:
+  type: library
+  lifecycle: production
+  owner: peavers-warcraft
