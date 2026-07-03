@@ -140,9 +140,10 @@ local function CreateWindow()
     body:SetPoint("TOPLEFT", 0, -22)
     body:SetPoint("BOTTOMRIGHT", 0, 4)
 
-    local scrollFrame = CreateFrame("ScrollFrame", nil, body, "UIPanelScrollFrameTemplate")
+    -- ScrollFrameTemplate provides the modern MinimalScrollBar (same style as the AH)
+    local scrollFrame = CreateFrame("ScrollFrame", nil, body, "ScrollFrameTemplate")
     scrollFrame:SetPoint("TOPLEFT", 12, -6)
-    scrollFrame:SetPoint("BOTTOMRIGHT", -30, 6)
+    scrollFrame:SetPoint("BOTTOMRIGHT", -26, 6)
     frame.scrollFrame = scrollFrame
 
     return frame
