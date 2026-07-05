@@ -16,4 +16,5 @@ src\Utils\Config.lua
 src\Utils\ConfigUI.lua
 src\Core\AuctionHouse.lua
 src\UI\MainFrame.lua
+src\UI\SideTab.lua
 src\Main.lua

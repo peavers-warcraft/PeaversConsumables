@@ -32,8 +32,21 @@ function ConfigUI:CreateGeneralOptions(content, yPos, baseSpacing, sectionSpacin
 
     _, newY = PeaversCommons.ConfigUIUtils.CreateCheckbox(
         content,
+        "PCShowAHTabCheckbox",
+        "Attach as a collapsible side tab on the Auction House",
+        controlIndent, yPos,
+        PC.Config.showAHTab,
+        function(checked)
+            PC.Config.showAHTab = checked
+            PC.Config:Save()
+        end
+    )
+    yPos = newY - 8
+
+    _, newY = PeaversCommons.ConfigUIUtils.CreateCheckbox(
+        content,
         "PCAutoOpenWithAHCheckbox",
-        "Open automatically when the Auction House opens",
+        "Open automatically when the Auction House opens (if side tab is disabled)",
         controlIndent, yPos,
         PC.Config.autoOpenWithAH,
         function(checked)
