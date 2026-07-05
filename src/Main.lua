@@ -10,7 +10,11 @@ PC.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "1.0.0"
 -- Register slash commands
 PeaversCommons.SlashCommands:Register(addonName, "pcons", {
     default = function()
-        PC.MainFrame:Toggle()
+        if PC.SideTab:IsAvailable() then
+            PC.SideTab:Toggle()
+        else
+            PC.MainFrame:Toggle()
+        end
     end,
     config = function()
         PC.ConfigUI:Open()
@@ -25,7 +29,11 @@ PeaversCommons.SlashCommands:Register(addonName, "pcons", {
 -- Additional slash command
 PeaversCommons.SlashCommands:Register(addonName, "consumables", {
     default = function()
-        PC.MainFrame:Toggle()
+        if PC.SideTab:IsAvailable() then
+            PC.SideTab:Toggle()
+        else
+            PC.MainFrame:Toggle()
+        end
     end
 })
 
@@ -35,12 +43,18 @@ PeaversCommons.Events:Init(addonName, function()
     PC.ConfigUI:Initialize()
 
     PeaversCommons.Events:RegisterEvent("AUCTION_HOUSE_SHOW", function()
-        if PC.Config.autoOpenWithAH then
-            PC.MainFrame:Show()
+        if PC.Config.showAHTab then
+            PC.SideTab:OnAuctionHouseShow()
+        else
+            PC.SideTab:HideTab()
+            if PC.Config.autoOpenWithAH then
+                PC.MainFrame:Show()
+            end
         end
     end)
 
     PeaversCommons.Events:RegisterEvent("AUCTION_HOUSE_CLOSED", function()
+        PC.SideTab:OnAuctionHouseClosed()
         if PC.Config.autoCloseWithAH then
             PC.MainFrame:Hide()
         end

@@ -13,6 +13,8 @@ local PC_DEFAULTS = {
     debugMode = false,
     autoOpenWithAH = true,
     autoCloseWithAH = true,
+    showAHTab = true,
+    ahPanelExpanded = true,
 }
 
 -- Create the AceDB-backed config

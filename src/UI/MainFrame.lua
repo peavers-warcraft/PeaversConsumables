@@ -129,8 +129,12 @@ local function CreateWindow()
     frame:SetMovable(true)
     frame:EnableMouse(true)
     frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", frame.StartMoving)
+    frame:SetScript("OnDragStart", function(self)
+        if self.docked then return end
+        self:StartMoving()
+    end)
     frame:SetScript("OnDragStop", function(self)
+        if self.docked then return end
         self:StopMovingOrSizing()
         self.userMoved = true
     end)
@@ -218,7 +222,7 @@ function MainFrame:Show()
     local frame = self:GetFrame()
 
     -- Dock next to the Auction House when it is open, unless the user moved us
-    if not frame.userMoved then
+    if not frame.userMoved and not frame.docked then
         frame:ClearAllPoints()
         local ahFrame = _G.AuctionHouseFrame
         if ahFrame and ahFrame:IsShown() then
@@ -230,6 +234,49 @@ function MainFrame:Show()
 
     frame:Show()
     self:Refresh()
+end
+
+-- While docked the panel acts as part of the Auction House, so ESC should
+-- fall through and close the AH itself rather than just this panel
+local function SetEscClosable(frame, closable)
+    local name = frame:GetName()
+    for i, v in ipairs(UISpecialFrames) do
+        if v == name then
+            if not closable then
+                table.remove(UISpecialFrames, i)
+            end
+            return
+        end
+    end
+    if closable then
+        tinsert(UISpecialFrames, name)
+    end
+end
+
+-- Dock the window flush against the anchor frame's right edge, matching
+-- its full height (used by the collapsible Auction House side tab)
+function MainFrame:ShowDocked(anchorFrame)
+    local frame = self:GetFrame()
+    frame:ClearAllPoints()
+    frame:SetPoint("TOPLEFT", anchorFrame, "TOPRIGHT", 0, 0)
+    frame:SetPoint("BOTTOMLEFT", anchorFrame, "BOTTOMRIGHT", 0, 0)
+    frame.docked = true
+    SetEscClosable(frame, false)
+    frame:Show()
+    self:Refresh()
+end
+
+function MainFrame:Undock()
+    local frame = self.frame
+    if not frame or not frame.docked then
+        return
+    end
+    frame.docked = nil
+    frame.userMoved = nil
+    SetEscClosable(frame, true)
+    frame:ClearAllPoints()
+    frame:SetHeight(FRAME_HEIGHT)
+    frame:SetPoint("CENTER")
 end
 
 function MainFrame:Hide()
