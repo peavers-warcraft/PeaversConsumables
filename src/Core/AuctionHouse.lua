@@ -18,8 +18,9 @@ end
 
 -- Switch the default AH UI to the buy/browse view so search results are visible
 local function EnsureBrowseMode(frame)
-    if frame.SetDisplayMode and AuctionHouseFrameDisplayMode and AuctionHouseFrameDisplayMode.Buy then
-        pcall(frame.SetDisplayMode, frame, AuctionHouseFrameDisplayMode.Buy)
+    local displayMode = _G.AuctionHouseFrameDisplayMode
+    if frame.SetDisplayMode and displayMode and displayMode.Buy then
+        pcall(frame.SetDisplayMode, frame, displayMode.Buy)
     end
 end
 
