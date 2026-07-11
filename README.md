@@ -21,6 +21,7 @@ A World of Warcraft addon that shows the best consumables, enchants and gems for
 Open the Auction House and the window appears next to it; click an item to search for it in the browse tab.
 <!-- /peavers:usage -->
 
+
 ## Installation
 
 ### Recommended: PeaversUpdater
