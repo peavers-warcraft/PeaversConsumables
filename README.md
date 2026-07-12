@@ -1,6 +1,6 @@
 # PeaversConsumables
 
-[![AddonSentry](https://api.addonsentry.io/api/public/repos/peavers-warcraft/PeaversConsumables/badge.svg)](https://addonsentry.io/dashboard/peavers-warcraft/PeaversConsumables)
+[![AddonSentry](https://addonsentry.io/api/public/repos/peavers-warcraft/PeaversConsumables/badge.svg)](https://addonsentry.io/dashboard/peavers-warcraft/PeaversConsumables)
 
 A World of Warcraft addon that shows the best consumables, enchants and gems for your spec and searches them on the Auction House with one click.
 
