@@ -75,9 +75,7 @@ PeaversCommons.Events:Init(addonName, function()
             description = "Best consumables for your spec with Auction House search",
             addonRef = PC,
             config = PC.Config,
-            buildPanel = function(parentFrame)
-                return PC.ConfigUI:BuildIntoFrame(parentFrame)
-            end,
+            pages = PC.ConfigUI:GetPages(),
             order = 9,
         })
     end

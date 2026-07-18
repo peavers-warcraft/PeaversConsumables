@@ -4,126 +4,98 @@ local ConfigUI = {}
 PC.ConfigUI = ConfigUI
 
 local PeaversCommons = _G.PeaversCommons
+if not PeaversCommons then return end
 
-function ConfigUI:InitializeOptions()
-    local panel = PeaversCommons.ConfigUIUtils.CreateSettingsPanel(
-        "Settings",
-        "Configuration options for PeaversConsumables"
-    )
+local W = PeaversCommons.Widgets
+local C = W.Colors
 
-    local content = panel.content
-    local yPos = panel.yPos
-    local baseSpacing = panel.baseSpacing
-    local sectionSpacing = panel.sectionSpacing
+local INDENT = 25
+local ROW = 26
 
-    yPos = self:CreateGeneralOptions(content, yPos, baseSpacing, sectionSpacing)
-    yPos = self:CreateDataOptions(content, yPos, baseSpacing, sectionSpacing)
+function ConfigUI:BuildGeneralPage(parentFrame)
+    local y = -10
 
-    panel:UpdateContentHeight(yPos)
+    local _, newY = W:CreateSectionHeader(parentFrame, "General Settings", INDENT, y)
+    y = newY - 8
 
-    return panel
+    local options = {
+        {
+            label = "Attach as a collapsible side tab on the Auction House",
+            key = "showAHTab",
+        },
+        {
+            label = "Open automatically when the Auction House opens",
+            description = "Only applies when the side tab is disabled.",
+            key = "autoOpenWithAH",
+        },
+        {
+            label = "Close automatically when the Auction House closes",
+            key = "autoCloseWithAH",
+        },
+    }
+
+    for _, opt in ipairs(options) do
+        local cb = W:CreateCheckbox(parentFrame, opt.label, {
+            checked = PC.Config[opt.key],
+            description = opt.description,
+            width = 420,
+            onChange = function(checked)
+                PC.Config[opt.key] = checked
+                PC.Config:Save()
+            end,
+        })
+        cb:SetPoint("TOPLEFT", INDENT, y)
+        y = y - (opt.description and ROW + 14 or ROW)
+    end
+
+    parentFrame:SetHeight(math.abs(y) + 30)
 end
 
-function ConfigUI:CreateGeneralOptions(content, yPos, baseSpacing, sectionSpacing)
-    local controlIndent = baseSpacing + 15
+function ConfigUI:BuildDataPage(parentFrame)
+    local y = -10
 
-    local _, newY = PeaversCommons.ConfigUIUtils.CreateSectionHeader(content, "General Settings", baseSpacing, yPos)
-    yPos = newY - 10
-
-    _, newY = PeaversCommons.ConfigUIUtils.CreateCheckbox(
-        content,
-        "PCShowAHTabCheckbox",
-        "Attach as a collapsible side tab on the Auction House",
-        controlIndent, yPos,
-        PC.Config.showAHTab,
-        function(checked)
-            PC.Config.showAHTab = checked
-            PC.Config:Save()
-        end
-    )
-    yPos = newY - 8
-
-    _, newY = PeaversCommons.ConfigUIUtils.CreateCheckbox(
-        content,
-        "PCAutoOpenWithAHCheckbox",
-        "Open automatically when the Auction House opens (if side tab is disabled)",
-        controlIndent, yPos,
-        PC.Config.autoOpenWithAH,
-        function(checked)
-            PC.Config.autoOpenWithAH = checked
-            PC.Config:Save()
-        end
-    )
-    yPos = newY - 8
-
-    _, newY = PeaversCommons.ConfigUIUtils.CreateCheckbox(
-        content,
-        "PCAutoCloseWithAHCheckbox",
-        "Close automatically when the Auction House closes",
-        controlIndent, yPos,
-        PC.Config.autoCloseWithAH,
-        function(checked)
-            PC.Config.autoCloseWithAH = checked
-            PC.Config:Save()
-        end
-    )
-    yPos = newY - 15
-
-    return yPos
-end
-
-function ConfigUI:CreateDataOptions(content, yPos, baseSpacing, sectionSpacing)
-    local controlIndent = baseSpacing + 15
-
-    local _, newY = PeaversCommons.ConfigUIUtils.CreateSeparator(content, baseSpacing, yPos)
-    yPos = newY - 15
-
-    _, newY = PeaversCommons.ConfigUIUtils.CreateSectionHeader(content, "Data Source", baseSpacing, yPos)
-    yPos = newY - 10
+    local _, newY = W:CreateSectionHeader(parentFrame, "Data Source", INDENT, y)
+    y = newY - 8
 
     local ConsumablesData = _G.PeaversConsumablesData
     if ConsumablesData and ConsumablesData.API then
         local updates = ConsumablesData.API.GetLastUpdate()
 
-        for source, timestamp in pairs(updates) do
-            local sourceLabel = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-            sourceLabel:SetPoint("TOPLEFT", controlIndent, yPos)
-            sourceLabel:SetText(source:sub(1, 1):upper() .. source:sub(2) .. ":")
-            sourceLabel:SetTextColor(1, 0.82, 0)
+        for source, timestamp in pairs(updates or {}) do
+            local label = W:CreateLabel(parentFrame,
+                source:sub(1, 1):upper() .. source:sub(2), { color = C.textSec })
+            label:SetPoint("TOPLEFT", INDENT, y)
 
-            local updateText = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
-            updateText:SetPoint("TOPLEFT", sourceLabel, "TOPRIGHT", 10, 0)
-            updateText:SetText(timestamp or "unknown")
+            local value = W:CreateLabel(parentFrame, timestamp or "unknown", { color = C.text })
+            value:SetPoint("TOPLEFT", INDENT + 110, y)
 
-            yPos = yPos - 20
+            y = y - 22
         end
     else
-        local errorText = content:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-        errorText:SetPoint("TOPLEFT", controlIndent, yPos)
-        errorText:SetText("PeaversConsumablesData not available")
-        errorText:SetTextColor(1, 0, 0)
-        yPos = yPos - 20
+        local err = W:CreateLabel(parentFrame,
+            "PeaversConsumablesData not available", { color = C.danger })
+        err:SetPoint("TOPLEFT", INDENT, y)
+        y = y - 22
     end
 
-    yPos = yPos - 15
-
-    return yPos
+    parentFrame:SetHeight(math.abs(y) + 30)
 end
 
+function ConfigUI:GetPages()
+    return {
+        -- First entry renders leftmost and is the default-selected tab
+        { key = "general", label = "General", builder = function(f) ConfigUI:BuildGeneralPage(f) end },
+        { key = "data", label = "Data", builder = function(f) ConfigUI:BuildDataPage(f) end },
+    }
+end
+
+-- Legacy single-panel path, kept for the older ConfigRegistry `buildPanel` contract.
 function ConfigUI:BuildIntoFrame(parentFrame)
-    local yPos = 0
-    local baseSpacing = 25
-    local sectionSpacing = 40
-
-    yPos = self:CreateGeneralOptions(parentFrame, yPos, baseSpacing, sectionSpacing)
-    yPos = self:CreateDataOptions(parentFrame, yPos, baseSpacing, sectionSpacing)
-
-    parentFrame:SetHeight(math.abs(yPos) + 50)
+    self:BuildGeneralPage(parentFrame)
     return parentFrame
 end
 
 function ConfigUI:Initialize()
-    self.panel = self:InitializeOptions()
 end
 
 function ConfigUI:Open()
