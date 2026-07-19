@@ -1,0 +1,7 @@
+{
+  "_comment": "Frames whose global name is required. Everything else should be anonymous: naming a templated frame also creates a global per named child the template defines.",
+  "namedFrames": {
+    "PeaversConsumablesFrame": "registered in UISpecialFrames, which resolves the frame via _G[name] on ESC (registered via frame:GetName())",
+    "PeaversConsumablesSideTab": "LargeSideTabButtonTemplate addresses its icon/highlight children by global name"
+  }
+}
