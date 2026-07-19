@@ -81,9 +81,30 @@ function ConfigUI:BuildDataPage(parentFrame)
     parentFrame:SetHeight(math.abs(y) + 30)
 end
 
+function ConfigUI:BuildInfoPage(parentFrame)
+    PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Consumables", {
+        "Shows the best consumables, enchants, and gems for your current spec, " ..
+            "sourced from wowcompare.io's guides, and searches any of them on the " ..
+            "Auction House with one click.",
+        { command = "/pcons", desc = "toggle the consumables window" },
+        { command = "/pcons config", desc = "open the configuration panel" },
+
+        { header = "Working the Auction House" },
+        "Open the Auction House and the window appears alongside it " ..
+            "automatically (this can be turned off in General). Click any item " ..
+            "to search for it in the browse tab - no typing needed.",
+
+        { header = "Where the data comes from" },
+        "Recommendations ship in the PeaversConsumablesData companion addon " ..
+            "and refresh automatically with updates, so the lists track the " ..
+            "current patch without manual imports.",
+    })
+end
+
 function ConfigUI:GetPages()
     return {
         -- First entry renders leftmost and is the default-selected tab
+        { key = "info", label = "Information", builder = function(f) ConfigUI:BuildInfoPage(f) end },
         { key = "general", label = "General", builder = function(f) ConfigUI:BuildGeneralPage(f) end },
         { key = "data", label = "Data", builder = function(f) ConfigUI:BuildDataPage(f) end },
     }
