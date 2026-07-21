@@ -84,7 +84,7 @@ end
 function ConfigUI:BuildInfoPage(parentFrame)
     PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Consumables", {
         "Shows the best consumables, enchants, and gems for your current spec, " ..
-            "sourced from wowcompare.io's guides, and searches any of them on the " ..
+            "sourced from wowcompare.io, and searches any of them on the " ..
             "Auction House with one click.",
         { command = "/pcons", desc = "toggle the consumables window" },
         { command = "/pcons config", desc = "open the configuration panel" },
