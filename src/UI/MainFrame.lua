@@ -8,14 +8,59 @@ local addonName, PC = ...
 
 local PeaversCommons = _G.PeaversCommons
 local FrameUtils = PeaversCommons.FrameUtils
+local Utils = PeaversCommons.Utils
 
 local MainFrame = {}
 PC.MainFrame = MainFrame
 
+-- Sizes below are the ones the window shipped with, produced by the Blizzard
+-- GameFont* templates at BASE_FONT_SIZE. Every metric is derived from the
+-- configured font size so rows, icons and the window grow with the text
+-- instead of clipping it.
+local BASE_FONT_SIZE = 12
 local FRAME_WIDTH = 340
 local FRAME_HEIGHT = 460
-local ROW_HEIGHT = 26
-local HEADER_HEIGHT = 24
+
+local function ResolveOutline(outline)
+    if type(outline) == "boolean" then
+        return outline and "OUTLINE" or ""
+    end
+    return outline or ""
+end
+
+local function GetFontSize()
+    local size = PC.Config and PC.Config.fontSize
+    if type(size) ~= "number" or size < 6 then
+        return BASE_FONT_SIZE
+    end
+    return size
+end
+
+local function GetMetrics()
+    local size = GetFontSize()
+    local delta = size - BASE_FONT_SIZE
+    return {
+        fontSize = size,
+        headerFontSize = size + 4,   -- GameFontNormalLarge
+        smallFontSize = math.max(6, size - 2), -- GameFontNormalSmall
+        rowHeight = size + 14,
+        headerHeight = size + 12,
+        messageHeight = size * 2 + 16,
+        iconSize = size + 8,
+        frameWidth = FRAME_WIDTH + delta * 10,
+    }
+end
+
+local function ApplyFont(fontString, size)
+    local config = PC.Config
+    Utils.SafeSetFont(fontString, config.fontFace, size, ResolveOutline(config.fontOutline))
+    if config.fontShadow then
+        fontString:SetShadowColor(0, 0, 0, 1)
+        fontString:SetShadowOffset(1, -1)
+    else
+        fontString:SetShadowOffset(0, 0)
+    end
+end
 
 local function GetPlayerClassAndSpec()
     local _, _, classID = UnitClass("player")
@@ -27,35 +72,37 @@ local function GetPlayerClassAndSpec()
     return classID, specID, specName
 end
 
-local function CreateCategoryHeader(content, text, yPos)
+local function CreateCategoryHeader(content, text, yPos, m)
     local header = content:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     header:SetPoint("TOPLEFT", 4, yPos)
     header:SetText(text)
     header:SetTextColor(1, 0.82, 0)
-    return yPos - HEADER_HEIGHT
+    ApplyFont(header, m.headerFontSize)
+    return yPos - m.headerHeight
 end
 
-local function CreateMessage(content, text, yPos)
+local function CreateMessage(content, text, yPos, m)
     local message = content:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     message:SetPoint("TOPLEFT", 4, yPos)
     message:SetPoint("RIGHT", content, "RIGHT", -4, 0)
     message:SetJustifyH("LEFT")
     message:SetText(text)
-    return yPos - 40
+    ApplyFont(message, m.fontSize)
+    return yPos - m.messageHeight
 end
 
-local function CreateItemRow(content, item, yPos)
+local function CreateItemRow(content, item, yPos, m)
     local row = CreateFrame("Button", nil, content)
     row:SetPoint("TOPLEFT", 4, yPos)
     row:SetPoint("RIGHT", content, "RIGHT", -4, 0)
-    row:SetHeight(ROW_HEIGHT)
+    row:SetHeight(m.rowHeight)
 
     local highlight = row:CreateTexture(nil, "HIGHLIGHT")
     highlight:SetAllPoints()
     highlight:SetColorTexture(1, 1, 1, 0.1)
 
     local icon = row:CreateTexture(nil, "ARTWORK")
-    icon:SetSize(20, 20)
+    icon:SetSize(m.iconSize, m.iconSize)
     icon:SetPoint("LEFT", 2, 0)
     icon:SetTexture(134400) -- question mark placeholder until item data loads
 
@@ -63,6 +110,7 @@ local function CreateItemRow(content, item, yPos)
     slotText:SetPoint("RIGHT", -4, 0)
     slotText:SetText(item.slot or "")
     slotText:SetTextColor(0.6, 0.6, 0.6)
+    ApplyFont(slotText, m.smallFontSize)
 
     local nameText = row:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     nameText:SetPoint("LEFT", icon, "RIGHT", 6, 0)
@@ -70,6 +118,7 @@ local function CreateItemRow(content, item, yPos)
     nameText:SetJustifyH("LEFT")
     nameText:SetWordWrap(false)
     nameText:SetText(item.itemName)
+    ApplyFont(nameText, m.fontSize)
 
     local function ApplyQualityColor(quality)
         local color = quality and ITEM_QUALITY_COLORS and ITEM_QUALITY_COLORS[quality]
@@ -108,13 +157,13 @@ local function CreateItemRow(content, item, yPos)
         GameTooltip:Hide()
     end)
 
-    return yPos - ROW_HEIGHT
+    return yPos - m.rowHeight
 end
 
 local function CreateWindow()
     local frame = CreateFrame("Frame", "PeaversConsumablesFrame", UIParent, "DefaultPanelTemplate")
     frame:Hide() -- frames are visible on creation; stay hidden until Show() drives a refresh
-    frame:SetSize(FRAME_WIDTH, FRAME_HEIGHT)
+    frame:SetSize(GetMetrics().frameWidth, FRAME_HEIGHT)
     frame:SetPoint("CENTER")
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
@@ -162,6 +211,12 @@ end
 
 function MainFrame:Refresh()
     local frame = self:GetFrame()
+    local m = GetMetrics()
+
+    -- Widen with the font so long item names keep their room; docking only
+    -- pins the vertical edges, so the width stays ours to set either way
+    frame:SetWidth(m.frameWidth)
+    ApplyFont(frame.TitleText, m.fontSize)
 
     -- Replace the scroll child with a fresh container each refresh;
     -- row counts are small so a rebuild is cheap and avoids pooling logic
@@ -172,7 +227,7 @@ function MainFrame:Refresh()
     local content = CreateFrame("Frame", nil, frame.scrollFrame)
     local width = frame.scrollFrame:GetWidth()
     if not width or width < 50 then
-        width = FRAME_WIDTH - 42 -- scroll frame insets before first layout pass
+        width = m.frameWidth - 42 -- scroll frame insets before first layout pass
     end
     content:SetWidth(width)
     frame.scrollFrame:SetScrollChild(content)
@@ -185,23 +240,23 @@ function MainFrame:Refresh()
 
     local ConsumablesData = _G.PeaversConsumablesData
     if not (ConsumablesData and ConsumablesData.API) then
-        yPos = CreateMessage(content, "PeaversConsumablesData is not available.", yPos)
+        yPos = CreateMessage(content, "PeaversConsumablesData is not available.", yPos, m)
     elseif not specID then
-        yPos = CreateMessage(content, "No specialization detected yet.", yPos)
+        yPos = CreateMessage(content, "No specialization detected yet.", yPos, m)
     else
         local API = ConsumablesData.API
         local consumables = API.GetAllConsumables(classID, specID)
 
         if not consumables or next(consumables) == nil then
             yPos = CreateMessage(content,
-                "No consumable data for " .. (specName or "your spec") .. " yet. More specs are coming soon.", yPos)
+                "No consumable data for " .. (specName or "your spec") .. " yet. More specs are coming soon.", yPos, m)
         else
             for _, category in ipairs(API.GetCategories()) do
                 local items = consumables[category]
                 if items and #items > 0 then
-                    yPos = CreateCategoryHeader(content, API.GetCategoryName(category) or category, yPos)
+                    yPos = CreateCategoryHeader(content, API.GetCategoryName(category) or category, yPos, m)
                     for _, item in ipairs(items) do
-                        yPos = CreateItemRow(content, item, yPos)
+                        yPos = CreateItemRow(content, item, yPos, m)
                     end
                     yPos = yPos - 8
                 end
