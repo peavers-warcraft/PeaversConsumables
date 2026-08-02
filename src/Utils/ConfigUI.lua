@@ -8,9 +8,15 @@ if not PeaversCommons then return end
 
 local W = PeaversCommons.Widgets
 local C = W.Colors
+local SettingsObjects = PeaversCommons.SettingsObjects
 
 local INDENT = 25
 local ROW = 26
+
+-- Font changes only need the window rebuilt; it re-reads the config on refresh
+local function OnSettingChanged()
+    PC.MainFrame:RefreshIfShown()
+end
 
 function ConfigUI:BuildGeneralPage(parentFrame)
     local y = -10
@@ -47,6 +53,20 @@ function ConfigUI:BuildGeneralPage(parentFrame)
         cb:SetPoint("TOPLEFT", INDENT, y)
         y = y - (opt.description and ROW + 14 or ROW)
     end
+
+    parentFrame:SetHeight(math.abs(y) + 30)
+end
+
+function ConfigUI:BuildTextPage(parentFrame)
+    local y = -10
+
+    -- The window has no bars or backdrop of its own, so the shadow toggle is
+    -- the only extra worth offering alongside face/size/outline
+    y = SettingsObjects.FontSettings(parentFrame, PC.Config, y, {
+        indent = INDENT,
+        width = 420,
+        onChanged = OnSettingChanged,
+    })
 
     parentFrame:SetHeight(math.abs(y) + 30)
 end
@@ -94,6 +114,11 @@ function ConfigUI:BuildInfoPage(parentFrame)
             "automatically (this can be turned off in General). Click any item " ..
             "to search for it in the browse tab - no typing needed.",
 
+        { header = "Making it readable" },
+        "The Text tab sets the font, size, outline and shadow for this window. " ..
+            "Rows and the window itself resize with the text, so larger sizes " ..
+            "stay readable rather than clipping.",
+
         { header = "Where the data comes from" },
         "Recommendations ship in the PeaversConsumablesData companion addon " ..
             "and refresh automatically with updates, so the lists track the " ..
@@ -106,6 +131,7 @@ function ConfigUI:GetPages()
         -- First entry renders leftmost and is the default-selected tab
         { key = "info", label = "Information", builder = function(f) ConfigUI:BuildInfoPage(f) end },
         { key = "general", label = "General", builder = function(f) ConfigUI:BuildGeneralPage(f) end },
+        { key = "text", label = "Text", builder = function(f) ConfigUI:BuildTextPage(f) end },
         { key = "data", label = "Data", builder = function(f) ConfigUI:BuildDataPage(f) end },
     }
 end

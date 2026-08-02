@@ -8,6 +8,9 @@ local addonName, PC = ...
 local PeaversCommons = _G.PeaversCommons
 local ConfigManager = PeaversCommons.ConfigManager
 
+-- Font defaults deliberately override ConfigManager.CommonDefaults (9pt/OUTLINE):
+-- they reproduce the Blizzard GameFont* look the window shipped with, so
+-- existing users see no change until they move the slider themselves.
 local PC_DEFAULTS = {
     enabled = true,
     debugMode = false,
@@ -15,6 +18,9 @@ local PC_DEFAULTS = {
     autoCloseWithAH = true,
     showAHTab = true,
     ahPanelExpanded = true,
+    fontSize = 12,
+    fontOutline = "",
+    fontShadow = true,
 }
 
 -- Create the AceDB-backed config
