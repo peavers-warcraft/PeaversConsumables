@@ -9,6 +9,7 @@ local addonName, PC = ...
 local PeaversCommons = _G.PeaversCommons
 local FrameUtils = PeaversCommons.FrameUtils
 local Utils = PeaversCommons.Utils
+local L = PC.L
 
 local MainFrame = {}
 PC.MainFrame = MainFrame
@@ -108,7 +109,7 @@ local function CreateItemRow(content, item, yPos, m)
 
     local slotText = row:CreateFontString(nil, "ARTWORK", "GameFontNormalSmall")
     slotText:SetPoint("RIGHT", -4, 0)
-    slotText:SetText(item.slot or "")
+    slotText:SetText(item.slot and L[item.slot] or "")
     slotText:SetTextColor(0.6, 0.6, 0.6)
     ApplyFont(slotText, m.smallFontSize)
 
@@ -150,7 +151,7 @@ local function CreateItemRow(content, item, yPos, m)
             GameTooltip:SetText(item.itemName)
         end
         GameTooltip:AddLine(" ")
-        GameTooltip:AddLine("Click to search on the Auction House", 0.2, 0.74, 0.97)
+        GameTooltip:AddLine(L["Click to search on the Auction House"], 0.2, 0.74, 0.97)
         GameTooltip:Show()
     end)
     row:SetScript("OnLeave", function()
@@ -234,27 +235,28 @@ function MainFrame:Refresh()
     frame.content = content
 
     local classID, specID, specName = GetPlayerClassAndSpec()
-    frame.TitleText:SetText("Peavers Consumables" .. (specName and (" - " .. specName) or ""))
+    frame.TitleText:SetText(L["Peavers Consumables"] .. (specName and (" - " .. specName) or ""))
 
     local yPos = -4
 
     local ConsumablesData = _G.PeaversConsumablesData
     if not (ConsumablesData and ConsumablesData.API) then
-        yPos = CreateMessage(content, "PeaversConsumablesData is not available.", yPos, m)
+        yPos = CreateMessage(content, L["PeaversConsumablesData is not available."], yPos, m)
     elseif not specID then
-        yPos = CreateMessage(content, "No specialization detected yet.", yPos, m)
+        yPos = CreateMessage(content, L["No specialization detected yet."], yPos, m)
     else
         local API = ConsumablesData.API
         local consumables = API.GetAllConsumables(classID, specID)
 
         if not consumables or next(consumables) == nil then
             yPos = CreateMessage(content,
-                "No consumable data for " .. (specName or "your spec") .. " yet. More specs are coming soon.", yPos, m)
+                string.format(L["No consumable data for %s yet. More specs are coming soon."],
+                    specName or L["your spec"]), yPos, m)
         else
             for _, category in ipairs(API.GetCategories()) do
                 local items = consumables[category]
                 if items and #items > 0 then
-                    yPos = CreateCategoryHeader(content, API.GetCategoryName(category) or category, yPos, m)
+                    yPos = CreateCategoryHeader(content, L[API.GetCategoryName(category) or category], yPos, m)
                     for _, item in ipairs(items) do
                         yPos = CreateItemRow(content, item, yPos, m)
                     end

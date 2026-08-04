@@ -9,6 +9,7 @@ if not PeaversCommons then return end
 local W = PeaversCommons.Widgets
 local C = W.Colors
 local SettingsObjects = PeaversCommons.SettingsObjects
+local L = PC.L
 
 local INDENT = 25
 local ROW = 26
@@ -21,21 +22,21 @@ end
 function ConfigUI:BuildGeneralPage(parentFrame)
     local y = -10
 
-    local _, newY = W:CreateSectionHeader(parentFrame, "General Settings", INDENT, y)
+    local _, newY = W:CreateSectionHeader(parentFrame, L["General Settings"], INDENT, y)
     y = newY - 8
 
     local options = {
         {
-            label = "Attach as a collapsible side tab on the Auction House",
+            label = L["Attach as a collapsible side tab on the Auction House"],
             key = "showAHTab",
         },
         {
-            label = "Open automatically when the Auction House opens",
-            description = "Only applies when the side tab is disabled.",
+            label = L["Open automatically when the Auction House opens"],
+            description = L["Only applies when the side tab is disabled."],
             key = "autoOpenWithAH",
         },
         {
-            label = "Close automatically when the Auction House closes",
+            label = L["Close automatically when the Auction House closes"],
             key = "autoCloseWithAH",
         },
     }
@@ -74,7 +75,7 @@ end
 function ConfigUI:BuildDataPage(parentFrame)
     local y = -10
 
-    local _, newY = W:CreateSectionHeader(parentFrame, "Data Source", INDENT, y)
+    local _, newY = W:CreateSectionHeader(parentFrame, L["Data Source"], INDENT, y)
     y = newY - 8
 
     local ConsumablesData = _G.PeaversConsumablesData
@@ -86,14 +87,14 @@ function ConfigUI:BuildDataPage(parentFrame)
                 source:sub(1, 1):upper() .. source:sub(2), { color = C.textSec })
             label:SetPoint("TOPLEFT", INDENT, y)
 
-            local value = W:CreateLabel(parentFrame, timestamp or "unknown", { color = C.text })
+            local value = W:CreateLabel(parentFrame, timestamp or L["unknown"], { color = C.text })
             value:SetPoint("TOPLEFT", INDENT + 110, y)
 
             y = y - 22
         end
     else
         local err = W:CreateLabel(parentFrame,
-            "PeaversConsumablesData not available", { color = C.danger })
+            L["PeaversConsumablesData not available"], { color = C.danger })
         err:SetPoint("TOPLEFT", INDENT, y)
         y = y - 22
     end
@@ -102,37 +103,29 @@ function ConfigUI:BuildDataPage(parentFrame)
 end
 
 function ConfigUI:BuildInfoPage(parentFrame)
-    PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, "Consumables", {
-        "Shows the best consumables, enchants, and gems for your current spec, " ..
-            "sourced from wowcompare.io, and searches any of them on the " ..
-            "Auction House with one click.",
-        { command = "/pcons", desc = "toggle the consumables window" },
-        { command = "/pcons config", desc = "open the configuration panel" },
+    PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, L["Consumables"], {
+        L["Shows the best consumables, enchants, and gems for your current spec, sourced from wowcompare.io, and searches any of them on the Auction House with one click."],
+        { command = "/pcons", desc = L["toggle the consumables window"] },
+        { command = "/pcons config", desc = L["open the configuration panel"] },
 
-        { header = "Working the Auction House" },
-        "Open the Auction House and the window appears alongside it " ..
-            "automatically (this can be turned off in General). Click any item " ..
-            "to search for it in the browse tab - no typing needed.",
+        { header = L["Working the Auction House"] },
+        L["Open the Auction House and the window appears alongside it automatically (this can be turned off in General). Click any item to search for it in the browse tab - no typing needed."],
 
-        { header = "Making it readable" },
-        "The Text tab sets the font, size, outline and shadow for this window. " ..
-            "Rows and the window itself resize with the text, so larger sizes " ..
-            "stay readable rather than clipping.",
+        { header = L["Making it readable"] },
+        L["The Text tab sets the font, size, outline and shadow for this window. Rows and the window itself resize with the text, so larger sizes stay readable rather than clipping."],
 
-        { header = "Where the data comes from" },
-        "Recommendations ship in the PeaversConsumablesData companion addon " ..
-            "and refresh automatically with updates, so the lists track the " ..
-            "current patch without manual imports.",
+        { header = L["Where the data comes from"] },
+        L["Recommendations ship in the PeaversConsumablesData companion addon and refresh automatically with updates, so the lists track the current patch without manual imports."],
     })
 end
 
 function ConfigUI:GetPages()
     return {
         -- First entry renders leftmost and is the default-selected tab
-        { key = "info", label = "Information", builder = function(f) ConfigUI:BuildInfoPage(f) end },
-        { key = "general", label = "General", builder = function(f) ConfigUI:BuildGeneralPage(f) end },
-        { key = "text", label = "Text", builder = function(f) ConfigUI:BuildTextPage(f) end },
-        { key = "data", label = "Data", builder = function(f) ConfigUI:BuildDataPage(f) end },
+        { key = "info", label = L["Information"], builder = function(f) ConfigUI:BuildInfoPage(f) end },
+        { key = "general", label = L["General"], builder = function(f) ConfigUI:BuildGeneralPage(f) end },
+        { key = "text", label = L["Text"], builder = function(f) ConfigUI:BuildTextPage(f) end },
+        { key = "data", label = L["Data"], builder = function(f) ConfigUI:BuildDataPage(f) end },
     }
 end
 

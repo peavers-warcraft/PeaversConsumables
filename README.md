@@ -11,6 +11,7 @@ A World of Warcraft addon that shows the best consumables, enchants and gems for
 - Click any item to instantly search for it on the Auction House
 - Window opens automatically alongside the Auction House (configurable)
 - Data updates automatically via the PeaversConsumablesData companion addon
+- Available in English and Simplified Chinese (zhCN)
 <!-- /peavers:features -->
 
 ## Usage

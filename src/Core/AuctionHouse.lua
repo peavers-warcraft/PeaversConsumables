@@ -7,6 +7,7 @@ local addonName, PC = ...
 
 local PeaversCommons = _G.PeaversCommons
 local Utils = PeaversCommons.Utils
+local L = PC.L
 
 local AuctionHouse = {}
 PC.AuctionHouse = AuctionHouse
@@ -32,7 +33,7 @@ function AuctionHouse:Search(item)
     end
 
     if not self:IsOpen() then
-        Utils.Print(PC, "Open the Auction House to search for " .. item.itemName .. ".")
+        Utils.Print(PC, string.format(L["Open the Auction House to search for %s."], item.itemName))
         return
     end
 

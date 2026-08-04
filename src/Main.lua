@@ -4,6 +4,7 @@ local PeaversCommons = _G.PeaversCommons
 local Utils = PeaversCommons.Utils
 
 PC = PC or {}
+local L = PC.L
 PC.name = addonName
 PC.version = C_AddOns.GetAddOnMetadata(addonName, "Version") or "1.0.0"
 
@@ -20,9 +21,9 @@ PeaversCommons.SlashCommands:Register(addonName, "pcons", {
         PC.ConfigUI:Open()
     end,
     help = function()
-        Utils.Print(PC, "Commands:")
-        print("  /pcons - Toggle the consumables window")
-        print("  /pcons config - Open configuration")
+        Utils.Print(PC, L["Commands:"])
+        print(L["  /pcons - Toggle the consumables window"])
+        print(L["  /pcons config - Open configuration"])
     end
 })
 
@@ -65,14 +66,14 @@ PeaversCommons.Events:Init(addonName, function()
     end)
 
     C_Timer.After(0.5, function()
-        PeaversCommons.SettingsUI:CreateRedirectPage(PC, "PeaversConsumables", "Peavers Consumables")
+        PeaversCommons.SettingsUI:CreateRedirectPage(PC, "PeaversConsumables", L["Peavers Consumables"])
     end)
     -- Register with PeaversConfig registry
     if PeaversCommons.ConfigRegistry then
         PeaversCommons.ConfigRegistry:Register({
             name = "PeaversConsumables",
-            displayName = "Consumables",
-            description = "Best consumables for your spec with Auction House search",
+            displayName = L["Consumables"],
+            description = L["Best consumables for your spec with Auction House search"],
             addonRef = PC,
             config = PC.Config,
             pages = PC.ConfigUI:GetPages(),
