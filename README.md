@@ -7,7 +7,7 @@ A World of Warcraft addon that shows the best consumables, enchants and gems for
 ## Features
 
 <!-- peavers:features -->
-- Best enchants, gems and consumables for your current spec, sourced from wowcompare.io
+- Best enchants, gems and consumables for your current spec, sourced from Wowhead
 - Click any item to instantly search for it on the Auction House
 - Window opens automatically alongside the Auction House (configurable)
 - Data updates automatically via the PeaversConsumablesData companion addon
