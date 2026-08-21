@@ -80,18 +80,24 @@ function ConfigUI:BuildDataPage(parentFrame)
 
     local ConsumablesData = _G.PeaversConsumablesData
     if ConsumablesData and ConsumablesData.API then
-        local updates = ConsumablesData.API.GetLastUpdate()
-
-        for source, timestamp in pairs(updates or {}) do
-            local label = W:CreateLabel(parentFrame,
-                source:sub(1, 1):upper() .. source:sub(2), { color = C.textSec })
-            label:SetPoint("TOPLEFT", INDENT, y)
-
-            local value = W:CreateLabel(parentFrame, timestamp or L["unknown"], { color = C.text })
-            value:SetPoint("TOPLEFT", INDENT + 110, y)
-
-            y = y - 22
+        -- GetLastUpdate returns the timestamp string. PeaversConsumablesData
+        -- before the source abstraction was dropped returned a
+        -- source -> timestamp table instead, and the two addons update
+        -- independently, so accept either rather than erroring on whichever
+        -- version the user happens to have installed.
+        local updated = ConsumablesData.API.GetLastUpdate()
+        if type(updated) == "table" then
+            local _, first = next(updated)
+            updated = first
         end
+
+        local label = W:CreateLabel(parentFrame, L["Updated"], { color = C.textSec })
+        label:SetPoint("TOPLEFT", INDENT, y)
+
+        local value = W:CreateLabel(parentFrame, updated or L["unknown"], { color = C.text })
+        value:SetPoint("TOPLEFT", INDENT + 110, y)
+
+        y = y - 22
     else
         local err = W:CreateLabel(parentFrame,
             L["PeaversConsumablesData not available"], { color = C.danger })
@@ -104,7 +110,7 @@ end
 
 function ConfigUI:BuildInfoPage(parentFrame)
     PeaversCommons.ConfigUIUtils.BuildInfoPage(parentFrame, L["Consumables"], {
-        L["Shows the best consumables, enchants, and gems for your current spec, sourced from wowcompare.io, and searches any of them on the Auction House with one click."],
+        L["Shows the best consumables, enchants, and gems for your current spec, sourced from Wowhead, and searches any of them on the Auction House with one click."],
         { command = "/pcons", desc = L["toggle the consumables window"] },
         { command = "/pcons config", desc = L["open the configuration panel"] },
 

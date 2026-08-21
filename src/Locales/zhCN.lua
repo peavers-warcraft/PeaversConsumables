@@ -48,11 +48,12 @@ L["Close automatically when the Auction House closes"] = "关闭拍卖行时自�
 -- Settings: Data page
 L["Data Source"] = "数据来源"
 L["unknown"] = "未知"
+L["Updated"] = "更新时间"
 L["PeaversConsumablesData not available"] = "PeaversConsumablesData 不可用"
 
 -- Settings: Information page
-L["Shows the best consumables, enchants, and gems for your current spec, sourced from wowcompare.io, and searches any of them on the Auction House with one click."] =
-    "显示当前专精最佳的消耗品、附魔和宝石，数据来自 wowcompare.io，只需点击一次即可在拍卖行中搜索其中任意一项。"
+L["Shows the best consumables, enchants, and gems for your current spec, sourced from Wowhead, and searches any of them on the Auction House with one click."] =
+    "显示当前专精最佳的消耗品、附魔和宝石，数据来自 Wowhead，只需点击一次即可在拍卖行中搜索其中任意一项。"
 L["toggle the consumables window"] = "开关消耗品窗口"
 L["open the configuration panel"] = "打开设置面板"
 L["Working the Auction House"] = "配合拍卖行使用"
